@@ -1,0 +1,17 @@
+[package]
+name = "tauri3-specta-macros"
+version = "0.1.0-alpha.1"
+edition = "2024"
+description = "Command and event macros for tauri3-specta"
+license = "MIT"
+repository = "https://github.com/nyssance/tauri3-specta"
+
+[lib]
+proc-macro = true
+
+[dependencies]
+syn = { version = "3.0.6", features = ["full"] }
+quote = "1.0.47"
+proc-macro2 = "1.0.107"
+proc-macro-crate = "3.5.0"
+heck = "0.5.0"

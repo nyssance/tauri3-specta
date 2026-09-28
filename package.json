@@ -1,0 +1,15 @@
+{
+  "name": "tauri3-specta-tests",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "bun test tests/client.test.ts"
+  },
+  "devDependencies": {
+    "@tauri-apps/api": "3.0.0-alpha.2",
+    "@types/bun": "^1.4.2",
+    "typescript": "^7.0.2"
+  },
+  "packageManager": "bun@1.4.2"
+}
