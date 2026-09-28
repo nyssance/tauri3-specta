@@ -71,7 +71,12 @@ fn render(
         if !command.function.docs.is_empty() {
             source.push_str("  /**\n");
             for line in command.function.docs.lines() {
-                writeln!(source, "   * {}", line.replace("*/", "* /")).expect("write to String");
+                writeln!(
+                    source,
+                    "{}",
+                    format!("   * {}", line.replace("*/", "* /")).trim_end()
+                )
+                .expect("write to String");
             }
             source.push_str("   */\n");
         }
