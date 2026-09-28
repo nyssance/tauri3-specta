@@ -95,11 +95,24 @@ Rust `Event::listen` delivers `Result<Payload, serde_json::Error>` so malformed 
 
 - Serde input and output shapes are distinct, including directional renaming.
 - Recursive DTOs, tagged enums, aliases, and `serde_json::Value` are covered by regression tests.
-- JSON values export as a recursive JSON union. JSON numbers use JavaScript `number`, with its normal precision limits. Other 64/128-bit integers fail export unless you explicitly define a suitable serialized representation with Specta/Serde.
+- JSON values export as a recursive JSON union. JSON numbers use JavaScript `number`, with its normal precision limits. Other wide integers fail export by default. Set `bigints_as_numbers` only when your application deliberately accepts JavaScript number precision, or define a lossless serialized representation with Specta/Serde.
 - Duplicate wire names and generated command names fail export. Generated internal names beginning with `__t3`, and `CommandErrors`, are reserved.
 - Generic command functions and generic event declarations are rejected. Use concrete command signatures and concrete event payloads; DTOs may still be generic.
 - Only `rename` and `rename_all` command options are currently supported. Plugin command namespaces, custom IPC response encodings, and alternate language exporters are outside the current API.
 - Specta prerelease versions are pinned together. The wire adapter corrects the published rc.25 metadata for JSON values and nested results; it does not replace Specta's type derivation or Serde exporter.
+
+## Export configuration
+
+`Bindings::typescript_with(ExportOptions { positional_arguments: true,
+result_errors: true, camel_case_events: true, bigints_as_numbers: true, finite_floats: true })`
+selects a positional frontend API, status-discriminated Rust results, camelCase
+event properties and JavaScript numbers for wide integers. `finite_floats` asserts that application float values are finite. All options default
+to false. Wire command and event names remain unchanged. Result mode returns
+`{ status: "ok", data }` or `{ status: "error", error }`; native JavaScript `Error`
+instances still reject the promise. Event property collisions fail export.
+
+An event payload only needs `DeserializeOwned` when using Rust `Event::listen`;
+backend-only emitted payloads can derive `Serialize` without `Deserialize`.
 
 ## Development
 

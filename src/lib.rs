@@ -31,6 +31,21 @@ pub enum Error {
     Io(#[from] std::io::Error),
 }
 
+/// Explicit choices for the generated frontend contract.
+#[derive(Clone, Copy, Debug, Default)]
+pub struct ExportOptions {
+    /// Generate positional parameters instead of an argument object.
+    pub positional_arguments: bool,
+    /// Wrap declared Rust errors in a status-discriminated union.
+    pub result_errors: bool,
+    /// Use camelCase event property names while preserving wire names.
+    pub camel_case_events: bool,
+    /// Represent wide integers as JS numbers, accepting JS precision limits.
+    pub bigints_as_numbers: bool,
+    /// Assert that application floats are finite; represent them as numbers.
+    pub finite_floats: bool,
+}
+
 /// Commands and events backed by one type graph and one IPC handler.
 pub struct Bindings<R: Runtime = DynRuntime> {
     handler: Arc<dyn Fn(Invoke<R>) -> bool + Send + Sync>,
@@ -98,8 +113,13 @@ impl<R: Runtime> Bindings<R> {
 
     /// Generates bindings in memory. Export errors are never suppressed.
     pub fn typescript(&self) -> Result<String, Error> {
+        self.typescript_with(ExportOptions::default())
+    }
+
+    /// Generates bindings with an explicit frontend contract.
+    pub fn typescript_with(&self, options: ExportOptions) -> Result<String, Error> {
         self.validate()?;
-        export::generate(&self.types, &self.commands, &self.events).map_err(Into::into)
+        export::generate(&self.types, &self.commands, &self.events, options).map_err(Into::into)
     }
 
     /// Writes a generated TypeScript module. The parent directory must exist.

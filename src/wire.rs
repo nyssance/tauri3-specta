@@ -3,7 +3,7 @@ use std::collections::BTreeMap;
 
 use specta::{
     Type, Types,
-    datatype::{DataType, Enum, Field, Fields, NamedReferenceType, Reference, Variant},
+    datatype::{DataType, Enum, Field, Fields, NamedReferenceType, Primitive, Reference, Variant},
 };
 
 // A named recursive type avoids expanding serde_json::Value indefinitely.
@@ -22,12 +22,14 @@ enum JsonValue {
 
 pub(crate) struct WireTypes {
     original: Types,
+    bigints_as_numbers: bool,
+    finite_floats: bool,
     json: Option<DataType>,
     number: DataType,
 }
 
 impl WireTypes {
-    pub(crate) fn new(types: &mut Types) -> Self {
+    pub(crate) fn new(types: &mut Types, bigints_as_numbers: bool, finite_floats: bool) -> Self {
         let original = types.clone();
         let has_json = original
             .into_unsorted_iter()
@@ -35,6 +37,8 @@ impl WireTypes {
         let json = has_json.then(|| JsonValue::definition(types));
         let wire = Self {
             original,
+            bigints_as_numbers,
+            finite_floats,
             json,
             number: specta_typescript::Number::<()>::definition(types),
         };
@@ -55,6 +59,31 @@ impl WireTypes {
     }
 
     pub(crate) fn normalize(&self, datatype: &mut DataType) {
+        if self.bigints_as_numbers
+            && matches!(
+                datatype,
+                DataType::Primitive(
+                    Primitive::usize
+                        | Primitive::isize
+                        | Primitive::u64
+                        | Primitive::i64
+                        | Primitive::u128
+                        | Primitive::i128
+                )
+            )
+        {
+            *datatype = DataType::Primitive(Primitive::u32);
+            return;
+        }
+        if self.finite_floats
+            && matches!(
+                datatype,
+                DataType::Primitive(Primitive::f32 | Primitive::f64)
+            )
+        {
+            *datatype = self.number.clone();
+            return;
+        }
         if let DataType::Reference(Reference::Named(reference)) = datatype
             && let Some(ty) = self.original.get(reference)
         {

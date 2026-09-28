@@ -61,3 +61,23 @@ function invalidCalls() {
   commands.directional({ payload: { outgoing: "value" } });
 }
 void invalidCalls;
+
+const configured = await import("./generated/configured");
+
+test("configured positional commands preserve status unions and transport failures", async () => {
+  const profile = { display_name: "Ada", score: 42 };
+  invoke.mockResolvedValueOnce(profile);
+  expect(await configured.commands.lookup("Ada")).toEqual({status: "ok", data: profile});
+  expect(invoke).toHaveBeenCalledWith("lookup", {userName: "Ada"});
+  const failure = {kind: "not_found", detail: "missing"} as const;
+  invoke.mockRejectedValueOnce(failure);
+  expect(await configured.commands.lookup("missing")).toEqual({status: "error", error: failure});
+  const transport = new Error("IPC failed");
+  invoke.mockRejectedValueOnce(transport);
+  await expect(configured.commands.lookup("Ada")).rejects.toBe(transport);
+});
+
+test("configured camelCase events retain their wire names", async () => {
+  await configured.events.downloadProgress.emit({percent: 100});
+  expect(emit).toHaveBeenCalledWith("download-progress", {percent: 100});
+});

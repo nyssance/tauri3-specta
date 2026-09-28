@@ -5,7 +5,7 @@ use tauri::{Emitter, EventId, EventTarget, Listener, Runtime};
 /// A payload with a stable event name shared by Rust and generated TypeScript.
 ///
 /// Derive using `#[derive(tauri3_specta::Event)]`. Names default to kebab-case.
-pub trait Event: Type + Serialize + DeserializeOwned + Clone + Send + 'static {
+pub trait Event: Type + Serialize + Clone + Send + 'static {
     /// The Tauri wire name of the event.
     const NAME: &'static str;
 
@@ -28,7 +28,10 @@ pub trait Event: Type + Serialize + DeserializeOwned + Clone + Send + 'static {
     fn listen<R: Runtime>(
         listener: &impl Listener<R>,
         handler: impl Fn(Result<Self, serde_json::Error>) + Send + 'static,
-    ) -> EventId {
+    ) -> EventId
+    where
+        Self: DeserializeOwned,
+    {
         listener.listen(Self::NAME, move |event| {
             handler(serde_json::from_str(event.payload()))
         })

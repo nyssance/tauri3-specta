@@ -194,3 +194,75 @@ fn inlined_results_keep_the_serde_wire_contract() {
     assert!(!source.contains("ok:"), "{source}");
     assert!(source.contains("Ok:"), "{source}");
 }
+
+#[test]
+fn explicit_number_policy_handles_wide_integers() {
+    let bindings: Bindings<MockRuntime> = commands![fixtures::large_integer];
+    let source = bindings
+        .typescript_with(crate::ExportOptions {
+            bigints_as_numbers: true,
+            ..Default::default()
+        })
+        .unwrap();
+    assert!(source.contains("Promise<number>"), "{source}");
+}
+
+#[test]
+fn positional_result_contract_preserves_wire_names() {
+    let source = fixtures::bindings::<MockRuntime>()
+        .typescript_with(crate::ExportOptions {
+            positional_arguments: true,
+            result_errors: true,
+            camel_case_events: true,
+            bigints_as_numbers: false,
+            finite_floats: false,
+        })
+        .unwrap();
+    assert!(
+        source.contains("\"systemPing\": (request_id: string)"),
+        "{source}"
+    );
+    assert!(
+        source.contains("(\"system_ping\", { request_id })"),
+        "{source}"
+    );
+    assert!(source.contains("__t3Result<Profile, Failure>"), "{source}");
+    assert!(source.contains("\"downloadProgress\": {"), "{source}");
+    assert!(
+        source.contains("__t3Emit(\"download-progress\", payload)"),
+        "{source}"
+    );
+}
+
+#[test]
+fn explicit_number_policy_preserves_json_map_keys() {
+    #[derive(specta::Type, serde::Serialize)]
+    struct Row {
+        cells: std::collections::HashMap<usize, String>,
+    }
+    let bindings = fixtures::bindings::<MockRuntime>().register::<Row>();
+    let source = bindings
+        .typescript_with(crate::ExportOptions {
+            bigints_as_numbers: true,
+            ..Default::default()
+        })
+        .unwrap();
+    assert!(source.contains("export type Row"), "{source}");
+}
+
+#[test]
+fn finite_float_policy_is_explicit() {
+    #[derive(specta::Type, serde::Serialize)]
+    struct Coordinates {
+        x: f64,
+    }
+    let bindings = fixtures::bindings::<MockRuntime>().register::<Coordinates>();
+    assert!(bindings.typescript().unwrap().contains("x: number | null"));
+    let source = bindings
+        .typescript_with(crate::ExportOptions {
+            finite_floats: true,
+            ..Default::default()
+        })
+        .unwrap();
+    assert!(source.contains("x: number,"), "{source}");
+}
