@@ -15,10 +15,10 @@ In your Tauri app's `Cargo.toml`:
 tauri = { version = "=3.0.0-alpha.4", features = ["specta"] }
 specta = { version = "=2.0.0-rc.25", features = ["derive", "function"] }
 serde = { version = "1", features = ["derive"] }
-tauri3-specta = "=0.1.0-alpha.1"
+tauri3-specta = "0.1.0-alpha.1"
 ```
 
-Use `@tauri-apps/api@3.0.0-alpha.2` on the frontend. Both `tauri` and `specta` must be direct dependencies under their standard names because their macros generate references to those crates. Pin the alpha version in applications and commit Cargo.lock.
+Use `@tauri-apps/api@3.0.0-alpha.2` on the frontend. Both `tauri` and `specta` must be direct dependencies under their standard names because their macros generate references to those crates. Use the compatible version requirement above and commit Cargo.lock to record the resolved version.
 
 ## Commands
 
