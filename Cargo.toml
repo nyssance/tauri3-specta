@@ -14,7 +14,7 @@ keywords = ["tauri", "specta", "typescript", "bindings", "codegen"]
 categories = ["development-tools::ffi"]
 
 [dependencies]
-tauri = { version = "=3.0.0-alpha.3", default-features = false, features = ["specta"] }
+tauri = { version = "=3.0.0-alpha.4", default-features = false, features = ["specta"] }
 specta = { version = "=2.0.0-rc.25", features = ["derive", "function", "serde_json"] }
 specta-typescript = "=0.0.12"
 specta-serde = "=0.0.12"
@@ -25,12 +25,7 @@ thiserror = "2.0.21"
 tauri3-specta-macros = { version = "=0.1.0-alpha.1", path = "macros" }
 
 [dev-dependencies]
-tauri = { version = "=3.0.0-alpha.3", default-features = false, features = ["test", "specta"] }
-
-# alpha.3's mock runtime gates WindowBuilder::transparent on this feature,
-# while tauri-runtime requires that method unconditionally. Test-only fix.
-[target.'cfg(target_os = "macos")'.dev-dependencies]
-tauri = { version = "=3.0.0-alpha.3", default-features = false, features = ["macos-private-api"] }
+tauri = { version = "=3.0.0-alpha.4", default-features = false, features = ["test", "specta"] }
 
 [lints.rust]
 unsafe_code = "forbid"

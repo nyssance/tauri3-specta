@@ -4,7 +4,7 @@ Type-safe TypeScript commands, channels, and events for **Tauri 3**, powered by 
 
 An independent implementation. No dependency on `tauri-specta`, no Tauri 2 compatibility layer. MIT licensed.
 
-**Alpha:** targets Tauri `3.0.0-alpha.3` and its current IPC contract. The public API can change with Tauri 3. This repository is the distribution source; crates.io publication is not yet available.
+**Alpha:** targets Tauri `3.0.0-alpha.4` and its current IPC contract. The public API can change with Tauri 3. This repository is the distribution source; crates.io publication is not yet available.
 
 ## Install
 
@@ -12,7 +12,7 @@ In your Tauri app's `Cargo.toml`:
 
 ```toml
 [dependencies]
-tauri = { version = "=3.0.0-alpha.3", features = ["specta"] }
+tauri = { version = "=3.0.0-alpha.4", features = ["specta"] }
 specta = { version = "=2.0.0-rc.25", features = ["derive", "function"] }
 serde = { version = "1", features = ["derive"] }
 tauri3-specta = { git = "https://github.com/nyssance/tauri3-specta" }
@@ -129,4 +129,4 @@ cargo clippy --workspace --all-targets --locked -- -D warnings
 cargo fmt --all -- --check
 ```
 
-Tests exercise Tauri's native mock IPC handler, event dispatch, generated TypeScript's static contract, and frontend wrappers. They do not launch a platform webview. Tauri alpha.3 requires `macos-private-api` in its macOS mock runtime; this is enabled only for this repository's test dependency.
+Tests exercise Tauri's native mock IPC handler, event dispatch, generated TypeScript's static contract, and frontend wrappers. They do not launch a platform webview. Tauri alpha.4 provides window transparency without the removed `macos-private-api` feature.
