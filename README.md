@@ -130,3 +130,17 @@ cargo fmt --all -- --check
 ```
 
 Tests exercise Tauri's native mock IPC handler, event dispatch, generated TypeScript's static contract, and frontend wrappers. They do not launch a platform webview. Tauri alpha.4 provides window transparency without the removed `macos-private-api` feature.
+
+
+## Publishing
+
+The manually dispatched `Publish` workflow runs the Linux, macOS and Windows CI
+suite before publishing `tauri3-specta-macros`, followed by `tauri3-specta`, to
+crates.io. Configure a repository Actions secret named `CARGO_REGISTRY_TOKEN`
+with permission to publish both crates before dispatching it. The first release
+also requires permission to create the crate names. Cargo verifies each package
+before upload; no local Cargo build is needed for this release workflow.
+
+After both registry entries are available, applications can replace their pinned
+Git dependency with the published version. Until then, retain the reviewed Git
+revision; workflow configuration alone does not mean a package has been published.
