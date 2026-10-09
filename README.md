@@ -4,7 +4,7 @@ Type-safe TypeScript commands, channels, and events for **Tauri 3**, powered by 
 
 An independent implementation. No dependency on `tauri-specta`, no Tauri 2 compatibility layer. MIT licensed.
 
-**Alpha:** targets Tauri `3.0.0-alpha.4` and its current IPC contract. The public API can change with Tauri 3. This repository is the distribution source; crates.io publication is not yet available.
+**Alpha:** targets Tauri `3.0.0-alpha.4` and its current IPC contract. The public API can change with Tauri 3. Published on crates.io as `tauri3-specta` and `tauri3-specta-macros`.
 
 ## Install
 
@@ -15,10 +15,10 @@ In your Tauri app's `Cargo.toml`:
 tauri = { version = "=3.0.0-alpha.4", features = ["specta"] }
 specta = { version = "=2.0.0-rc.25", features = ["derive", "function"] }
 serde = { version = "1", features = ["derive"] }
-tauri3-specta = { git = "https://github.com/nyssance/tauri3-specta" }
+tauri3-specta = "=0.1.0-alpha.1"
 ```
 
-Use `@tauri-apps/api@3.0.0-alpha.2` on the frontend. Both `tauri` and `specta` must be direct dependencies under their standard names because their macros generate references to those crates. Pin the Git dependency to a reviewed commit in applications.
+Use `@tauri-apps/api@3.0.0-alpha.2` on the frontend. Both `tauri` and `specta` must be direct dependencies under their standard names because their macros generate references to those crates. Pin the alpha version in applications and commit Cargo.lock.
 
 ## Commands
 
