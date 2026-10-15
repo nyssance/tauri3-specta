@@ -1,6 +1,6 @@
 [package]
 name = "tauri3-specta-macros"
-version = "0.1.0-alpha.1"
+version = "0.1.0-alpha.2"
 edition = "2024"
 description = "Command and event macros for tauri3-specta"
 license = "MIT"
