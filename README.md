@@ -12,7 +12,7 @@ In your Tauri app's `Cargo.toml`:
 
 ```toml
 [dependencies]
-tauri = { version = "=3.0.0-alpha.5", features = ["specta"] }
+tauri = { version = "3.0.0-alpha.5", features = ["specta"] }
 specta = { version = "2.0.0-rc.27", features = ["derive", "function"] }
 serde = { version = "1", features = ["derive"] }
 tauri3-specta = "0.1.0-alpha.3"
