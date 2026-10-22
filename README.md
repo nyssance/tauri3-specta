@@ -4,7 +4,7 @@ Type-safe TypeScript commands, channels, and events for **Tauri 3**, powered by 
 
 An independent implementation. No dependency on `tauri-specta`, no Tauri 2 compatibility layer. MIT licensed.
 
-**Alpha:** targets Tauri `3.0.0-alpha.5` and its current IPC contract. The public API can change with Tauri 3. This repository is the distribution source; crates.io publication is not yet available.
+**Alpha:** targets Tauri `3.0.0-alpha.5` and its current IPC contract. The public API can change with Tauri 3. Published on crates.io.
 
 ## Install
 
@@ -13,12 +13,12 @@ In your Tauri app's `Cargo.toml`:
 ```toml
 [dependencies]
 tauri = { version = "=3.0.0-alpha.5", features = ["specta"] }
-specta = { version = "=2.0.0-rc.25", features = ["derive", "function"] }
+specta = { version = "2.0.0-rc.27", features = ["derive", "function"] }
 serde = { version = "1", features = ["derive"] }
-tauri3-specta = { git = "https://github.com/nyssance/tauri3-specta" }
+tauri3-specta = "0.1.0-alpha.3"
 ```
 
-Use `@tauri-apps/api@3.0.0-alpha.2` on the frontend. Both `tauri` and `specta` must be direct dependencies under their standard names because their macros generate references to those crates. Pin the Git dependency to a reviewed commit in applications.
+Use `@tauri-apps/api@3.0.0-alpha.3` on the frontend. Both `tauri` and `specta` must be direct dependencies under their standard names because their macros generate references to those crates. Keep Cargo.lock committed in applications.
 
 ## Commands
 
@@ -99,7 +99,7 @@ Rust `Event::listen` delivers `Result<Payload, serde_json::Error>` so malformed 
 - Duplicate wire names and generated command names fail export. Generated internal names beginning with `__t3`, and `CommandErrors`, are reserved.
 - Generic command functions and generic event declarations are rejected. Use concrete command signatures and concrete event payloads; DTOs may still be generic.
 - Only `rename` and `rename_all` command options are currently supported. Plugin command namespaces, custom IPC response encodings, and alternate language exporters are outside the current API.
-- Specta prerelease versions are pinned together. The wire adapter corrects the published rc.25 metadata for JSON values and nested results; it does not replace Specta's type derivation or Serde exporter.
+- Specta prerelease dependencies use compatible version ranges; Cargo.lock records the tested versions. Specta supplies recursive JSON and nested result metadata. The wire adapter only applies the selected JSON number and application numeric policies.
 
 ## Export configuration
 

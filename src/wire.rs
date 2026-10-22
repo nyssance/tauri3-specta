@@ -1,56 +1,28 @@
 //! Normalize standard-library metadata to the JSON representation used by Tauri.
-use std::collections::BTreeMap;
-
 use specta::{
     Type, Types,
-    datatype::{DataType, Enum, Field, Fields, NamedReferenceType, Primitive, Reference, Variant},
+    datatype::{DataType, Fields, NamedReferenceType, Primitive, Reference},
 };
-
-// A named recursive type avoids expanding serde_json::Value indefinitely.
-// JSON numbers become JavaScript numbers; large integers have JS precision limits.
-#[allow(dead_code)]
-#[derive(Type, serde::Serialize)]
-#[serde(untagged)]
-enum JsonValue {
-    Null(()),
-    Bool(bool),
-    Number(#[specta(type = specta_typescript::Number)] f64),
-    String(String),
-    Array(Vec<JsonValue>),
-    Object(BTreeMap<String, JsonValue>),
-}
 
 pub(crate) struct WireTypes {
     original: Types,
     bigints_as_numbers: bool,
     finite_floats: bool,
-    json: Option<DataType>,
     number: DataType,
 }
 
 impl WireTypes {
     pub(crate) fn new(types: &mut Types, bigints_as_numbers: bool, finite_floats: bool) -> Self {
         let original = types.clone();
-        let has_json = original
-            .into_unsorted_iter()
-            .any(|ty| ty.module_path == "serde_json" && ty.name == "Value");
-        let json = has_json.then(|| JsonValue::definition(types));
         let wire = Self {
             original,
             bigints_as_numbers,
             finite_floats,
-            json,
             number: specta_typescript::Number::<()>::definition(types),
         };
         types.iter_mut(|ty| {
-            if ty.module_path == "serde_json" && ty.name == "Value" {
-                ty.ty = Some(wire.json.clone().expect("JSON type was registered"));
-            } else if ty.module_path == "serde_json" && ty.name == "Number" {
+            if ty.module_path == "serde_json" && ty.name == "Number" {
                 ty.ty = Some(wire.number.clone());
-            } else if ["std::result", "core::result"].contains(&ty.module_path.as_ref())
-                && ty.name == "Result"
-            {
-                normalize_result(ty.ty.as_mut().expect("Result definition"));
             } else if let Some(body) = &mut ty.ty {
                 wire.normalize(body);
             }
@@ -86,21 +58,11 @@ impl WireTypes {
         }
         if let DataType::Reference(Reference::Named(reference)) = datatype
             && let Some(ty) = self.original.get(reference)
+            && ty.module_path == "serde_json"
+            && ty.name == "Number"
         {
-            if ty.module_path == "serde_json" && ty.name == "Value" {
-                *datatype = self.json.clone().expect("JSON type was registered");
-                return;
-            }
-            if ty.module_path == "serde_json" && ty.name == "Number" {
-                *datatype = self.number.clone();
-                return;
-            }
-            if ["std::result", "core::result"].contains(&ty.module_path.as_ref())
-                && ty.name == "Result"
-                && let NamedReferenceType::Inline { dt, .. } = &mut reference.inner
-            {
-                normalize_result(dt);
-            }
+            *datatype = self.number.clone();
+            return;
         }
         match datatype {
             DataType::List(list) => self.normalize(&mut list.ty),
@@ -142,28 +104,4 @@ impl WireTypes {
             Fields::Unit => {}
         }
     }
-}
-
-fn normalize_result(datatype: &mut DataType) {
-    let DataType::Struct(body) = datatype else {
-        panic!("unexpected Specta Result definition")
-    };
-    let Fields::Named(fields) = &body.fields else {
-        panic!("unexpected Specta Result fields")
-    };
-    let mut result = Enum::default();
-    for (name, field) in &fields.fields {
-        let tag = match name.as_ref() {
-            "ok" => "Ok",
-            "err" => "Err",
-            _ => panic!("unexpected Specta Result field"),
-        };
-        result.variants.push((
-            tag.into(),
-            Variant::unnamed()
-                .field(Field::new(field.ty.clone().expect("Result field type")))
-                .build(),
-        ));
-    }
-    *datatype = result.into();
 }

@@ -263,8 +263,8 @@ fn render_type(
 ) -> Result<String, Error> {
     let datatype = select_phase_datatype(datatype, exporter.types, phase);
     match &datatype {
-        DataType::Reference(reference) => {
-            primitives::reference(exporter.as_ref(), exporter.types, reference)
+        DataType::Reference(_) => {
+            primitives::reference(exporter.as_ref(), exporter.types, &datatype)
         }
         _ => primitives::inline(exporter.as_ref(), exporter.types, &datatype),
     }
