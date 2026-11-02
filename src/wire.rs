@@ -81,7 +81,7 @@ impl WireTypes {
             DataType::Reference(Reference::Named(reference)) => match &mut reference.inner {
                 NamedReferenceType::Inline { dt, .. } => self.normalize(dt),
                 NamedReferenceType::Reference { generics, .. } => {
-                    generics.iter_mut().for_each(|(_, ty)| self.normalize(ty))
+                    generics.iter_mut().for_each(|(_, ty)| self.normalize(ty));
                 }
                 NamedReferenceType::Recursive(_) => {}
             },

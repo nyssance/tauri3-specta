@@ -33,7 +33,7 @@ pub trait Event: Type + Serialize + Clone + Send + 'static {
         Self: DeserializeOwned,
     {
         listener.listen(Self::NAME, move |event| {
-            handler(serde_json::from_str(event.payload()))
+            handler(serde_json::from_str(event.payload()));
         })
     }
 }
