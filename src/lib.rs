@@ -29,6 +29,8 @@ pub enum Error {
     Typescript(#[from] specta_typescript::Error),
     #[error(transparent)]
     Io(#[from] std::io::Error),
+    #[error("invalid plugin name: {0}")]
+    PluginName(String),
 }
 
 /// Explicit choices for the generated frontend contract.
@@ -52,6 +54,7 @@ pub struct Bindings<R: Runtime = DynRuntime> {
     types: Types,
     commands: Vec<Command>,
     events: Vec<EventSchema>,
+    plugin: Option<String>,
 }
 
 #[doc(hidden)]
@@ -93,7 +96,23 @@ impl<R: Runtime> Bindings<R> {
             types,
             commands,
             events: Vec::new(),
+            plugin: None,
         }
+    }
+
+    /// Address the commands of a Tauri plugin: the generated client invokes
+    /// `plugin:<name>|<command>`, while the plugin's handler keeps the bare command names.
+    /// The name must equal the one passed to `tauri::plugin::Builder::new`.
+    pub fn plugin(mut self, name: &str) -> Result<Self, Error> {
+        let valid = !name.is_empty()
+            && !name.starts_with('-')
+            && !name.ends_with('-')
+            && name.bytes().all(|c| c.is_ascii_lowercase() || c.is_ascii_digit() || c == b'-');
+        if !valid {
+            return Err(Error::PluginName(name.to_owned()));
+        }
+        self.plugin = Some(name.to_owned());
+        Ok(self)
     }
 
     /// Adds an event using the name defined by its [`Event`] implementation.
@@ -119,7 +138,7 @@ impl<R: Runtime> Bindings<R> {
     /// Generates bindings with an explicit frontend contract.
     pub fn typescript_with(&self, options: ExportOptions) -> Result<String, Error> {
         self.validate()?;
-        export::generate(&self.types, &self.commands, &self.events, options).map_err(Into::into)
+        export::generate(&self.types, &self.commands, &self.events, self.plugin.as_deref(), options).map_err(Into::into)
     }
 
     /// Writes a generated TypeScript module. The parent directory must exist.

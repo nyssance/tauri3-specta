@@ -8,7 +8,7 @@
   },
   "devDependencies": {
     "@tauri-apps/api": "^3.0.0-alpha.3",
-    "@types/bun": "^1.4.2",
+    "@types/bun": "^1.4.4",
     "typescript": "^7.0.2"
   },
   "packageManager": "bun@1.4.3"

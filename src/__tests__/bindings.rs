@@ -266,3 +266,17 @@ fn finite_float_policy_is_explicit() {
         .unwrap();
     assert!(source.contains("x: number,"), "{source}");
 }
+
+#[test]
+fn plugin_commands_are_addressed_through_the_plugin() {
+    let source = fixtures::bindings::<MockRuntime>()
+        .plugin("alwith-drive")
+        .unwrap()
+        .typescript()
+        .unwrap();
+    assert!(source.contains("(\"plugin:alwith-drive|system_ping\", args)"), "{source}");
+    assert!(!source.contains("(\"system_ping\", args)"), "{source}");
+    for invalid in ["", "Drive", "-drive", "drive-", "a|b", "a:b"] {
+        assert!(fixtures::bindings::<MockRuntime>().plugin(invalid).is_err(), "{invalid}");
+    }
+}

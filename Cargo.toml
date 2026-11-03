@@ -4,7 +4,7 @@ resolver = "3"
 
 [package]
 name = "tauri3-specta"
-version = "0.1.0-alpha.3"
+version = "0.1.0-alpha.4"
 edition = "2024"
 description = "Type-safe TypeScript commands and events for Tauri 3, powered by Specta"
 license = "MIT"
