@@ -14,7 +14,7 @@ keywords = ["tauri", "specta", "typescript", "bindings", "codegen"]
 categories = ["development-tools::ffi"]
 
 [dependencies]
-tauri = { version = "3.0.0-alpha.5", default-features = false, features = ["specta"] }
+tauri = { version = "3.0.0-alpha.6", default-features = false, features = ["specta"] }
 specta = { version = "2.0.0-rc.28", features = ["derive", "function", "serde_json"] }
 specta-typescript = "0.0.15"
 specta-serde = "0.0.15"
@@ -25,7 +25,7 @@ thiserror = "2.0.21"
 tauri3-specta-macros = { version = "0.1.0-alpha.2", path = "macros" }
 
 [dev-dependencies]
-tauri = { version = "3.0.0-alpha.5", default-features = false, features = ["test", "specta"] }
+tauri = { version = "3.0.0-alpha.6", default-features = false, features = ["test", "specta"] }
 
 [lints.rust]
 unsafe_code = "forbid"
