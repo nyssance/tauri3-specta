@@ -3,13 +3,13 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "typecheck": "tsc --noEmit",
+    "typecheck": "bun check --no-script",
     "test": "bun test tests/client.test.ts"
   },
   "devDependencies": {
+    "@nyssance/tsconfig": "^0.1.0",
     "@tauri-apps/api": "^3.0.0-alpha.3",
-    "@types/bun": "^1.4.4",
-    "typescript": "^7.0.2"
+    "@types/bun": "^1.4.4"
   },
   "packageManager": "bun@1.4.3"
 }
