@@ -9,7 +9,7 @@
   "devDependencies": {
     "@nyssance/tsconfig": "^0.1.2",
     "@tauri-apps/api": "^3.0.0-alpha.3",
-    "@types/bun": "^1.4.4"
+    "@types/bun": "^1.4.5"
   },
   "packageManager": "bun@1.4.5"
 }
