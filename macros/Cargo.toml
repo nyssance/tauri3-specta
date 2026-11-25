@@ -10,8 +10,8 @@ repository = "https://github.com/nyssance/tauri3-specta"
 proc-macro = true
 
 [dependencies]
-syn = { version = "3.0.9", features = ["full"] }
-quote = "1.0.47"
-proc-macro2 = "1.0.107"
-proc-macro-crate = "3.5.0"
-heck = "0.5.0"
+syn = { version = "3", features = ["full"] }
+quote = "1"
+proc-macro2 = "1"
+proc-macro-crate = "3"
+heck = "0.5"
